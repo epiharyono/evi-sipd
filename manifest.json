@@ -1,0 +1,76 @@
+{
+	"manifest_version": 3,
+	"name": "SIPD RI Penatausahaan tools",
+	"description": "Chrome extension untuk mengoptimalkan aplikasi sipd-ri.kemendagri.go.id modul Penatausahaan",
+	"version": "1.0.0",
+	"icons": {
+		"16": "img/logo-small.png",
+		"48": "img/logo-small.png",
+		"128": "img/logo-small.png"
+	},
+	"background": {
+		"service_worker": "background_all.js"
+	},
+	"content_scripts": [
+		{
+			"matches": [
+				"https://sipd.kemendagri.go.id/penatausahaan/*"
+			],
+			"css": [
+				"css/content.css",
+				"css/select2.min.css"
+			],
+			"js": [
+				"config.js",
+				"js/jquery.min.js",
+				"js/crypto-js.min.js",
+				"js/select2.min.js",
+				"js/content/content_scripts.js",
+				"js/content/functions.js",
+				"js/content/login.js",
+				"js/content/app.js",
+				"js/content/dashboard.js",
+				"js/content/pengeluaran/rekanan.js",
+				"js/content/pengeluaran/dpa/rak.js",
+				"js/content/pengeluaran/spd/spd.js",
+				"js/content/pengeluaran/sp2d/sp2d.js",
+				"js/content/pengeluaran/sts/sts.js",
+				"js/content/pengeluaran/spp/spp.js",
+				"js/content/pengeluaran/spm/spm.js",
+				"js/content/pengeluaran/tbp/tbp.js",
+				"js/content/pengeluaran/lpj/lpj.js",
+				"js/content/pengeluaran/lpj/lpj_tu.js",
+				"js/content/pengeluaran/pengajuan/npd.js",
+				"js/content/penerimaan/rekening/rekening.js",
+				"js/content/penerimaan/stbp/stbp.js",
+				"js/content/pembiayaan/spd.js",
+				"js/content/master/user.js",
+				"js/content/master/pegawai.js",
+				"js/content/aklap/lra.js",
+				"js/content/aklap/jurnal.js"
+			],
+			"run_at": "document_end"
+		}
+	],
+	"web_accessible_resources": [
+		{
+			"resources": [
+				"/config.js",
+				"/content_message.js",
+				"/js/*",
+				"/img/*",
+				"/css/*"
+			],
+			"matches": [
+				"https://sipd.kemendagri.go.id/*"
+			]
+		}
+	],
+	"host_permissions": ["<all_urls>"],
+	"permissions": [
+		"webRequest",
+		"activeTab",
+		"storage",
+		"tabs"
+	]
+}
