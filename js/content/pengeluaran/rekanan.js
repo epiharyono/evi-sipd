@@ -39,7 +39,7 @@ function get_rekanan2(opsi, page=1, limit=6){
 						        content: {
 								    url: config.url_server_lokal,
 								    type: 'post',
-								    data: { 
+								    data: {
 										action: 'singkron_rekanan_sipd',
 										tahun_anggaran: _token.tahun,
 										api_key: config.api_key,
@@ -72,11 +72,11 @@ function get_rekanan2(opsi, page=1, limit=6){
 }
 
 function get_rekanan(opsi, page=1, limit=6){
-	return new Promise(function(resolve, reject){		
+	return new Promise(function(resolve, reject){
 	    relayAjaxApiKey({
-			url: config.service_url+'referensi/strict/skpd/list/'+_token.id_daerah+'/'+_token.tahun,    
+			url: config.service_url+'referensi/strict/skpd/list/'+_token.id_daerah+'/'+_token.tahun,
 			type: 'get',
-			success: function(data){				
+			success: function(data){
 					var last = data.length-1;
 					data.reduce(function(sequence, nextData){
 			            return sequence.then(function(current_data){
@@ -110,7 +110,7 @@ function get_rekanan(opsi, page=1, limit=6){
 														content: {
 															url: config.url_server_lokal,
 															type: 'post',
-															data: { 
+															data: {
 																action: 'singkron_rekanan_sipd',
 																tahun_anggaran: _token.tahun,
 																api_key: config.api_key,
@@ -124,7 +124,7 @@ function get_rekanan(opsi, page=1, limit=6){
 												chrome.runtime.sendMessage(data_back, function(response) {
 													console.log('responeMessage', response);
 												});
-						
+
 												if(rekanan.length >= limit){
 													// dikosongkan lagi setelah data dikirim ke lokal
 													opsi.rekanan = [];
@@ -150,7 +150,7 @@ function get_rekanan(opsi, page=1, limit=6){
 			                return Promise.resolve(nextData);
 			            });
 			        }, Promise.resolve(data[last]))
-			        .then(function(data_last){			        	
+			        .then(function(data_last){
 						chrome.runtime.sendMessage(data_back, function(response) {
 						    console.log('responeMessage', response);
 						});
@@ -170,4 +170,44 @@ function get_rekanan(opsi, page=1, limit=6){
 			}
 		});
 	});
+}
+
+
+function get_rekanan_bynorek(rekening,id_skpd){
+    pesan_loading('Get data Rekanan nomor rekening ='+rekening);
+    relayAjaxApiKey({
+        url: config.service_url+'pengeluaran/strict/rekanan?page=1&limit=6&id_skpd='+id_skpd+'&nomor_rekening='+rekening,
+        type: 'get',
+        success: function (response) {
+            console.log('SPM', response);
+            if(response!=null && response.length >= 1){
+
+                  var data_back = {
+                    message:{
+                      type: "get-url",
+                      content: {
+                        url: config.url_server_lokal+'/save-rekanan',
+                        type: 'post',
+                        data: {
+                          action: 'singkron_rekanan_sipd',
+                          tahun_anggaran: _token.tahun,
+                          api_key: config.api_key,
+                          type: 'ri',
+                          data_rekanan: response
+                        },
+                        return: false
+                      }
+                    }
+                  };
+                  chrome.runtime.sendMessage(data_back, function(response) {
+                    console.log('responeMessage', response);
+                  });
+
+            }else{
+                console.log('Tidak ditemukan');
+            }
+        },
+    });
+
+
 }

@@ -59,7 +59,7 @@ function singkron_spm_lokal_per_jenis(type_data, status, page=1, response_all=[]
                     response_all.push(b);
                 })
 
-								if(page <= 20){
+								if(page <= 2){
 										setTimeout(() => {
 												console.log('ini post_spm_localdb : '+page);
 				                singkron_spm_lokal_per_jenis(type_data, status, page+1, response_all, cb);
@@ -78,6 +78,26 @@ function singkron_spm_lokal_per_jenis(type_data, status, page=1, response_all=[]
     });
 }
 
+function singkron_spm_lokal_bynomor(nomor_spm, response_all=[]){
+    pesan_loading('Get data SPM nomor ='+nomor_spm);
+    relayAjaxApiKey({
+        url: config.service_url+'pengeluaran/strict/spm/index?nomor_spm='+nomor_spm,
+        type: 'get',
+        success: function (response) {
+            console.log('SPM', response);
+            if(response!=null && response.length >= 1){
+                response.map(function(b, i){
+                    response_all.push(b);
+                })
+								post_spm_localdb(response_all);
+								console.log('SPM Ditemukan ',response);
+            }else{
+                console.log('Tidak ditemukan');
+            }
+        },
+    });
+}
+
 
 
 async function post_spm_localdb(response){
@@ -87,11 +107,6 @@ async function post_spm_localdb(response){
 							singkron_spm_ke_lokal_skpd(b, 'type_data', 'status', ()=>{
 								resolve_reduce(nextData);
 							});
-
-							// singkron_spm_cetak_ke_lokal_skpd(b, 'type_data', 'status', ()=>{
-							// 	resolve_reduce(nextData);
-							// });
-
 							console.log('ini post_spm_localdb : '+i, b);
 				}, 2500 * i)
 		})
@@ -171,54 +186,6 @@ function singkron_spm_ke_lokal_skpd(current_data, tipe, status, callback) {
     if(tipe == 'UP'){
         return callback();
     }
-
-    // new Promise(function (resolve, reject) {
-    //     jQuery.ajax({
-    //         url: config.service_url + "pengeluaran/strict/spm/cetak/" + current_data.id_spm,
-    //         type: 'get',
-    //         dataType: "JSON",
-    //         beforeSend: function (xhr) {
-    //             xhr.setRequestHeader("Authorization", 'Bearer '+getCookie('X-SIPD-PU-TK'));
-    //         },
-    //         success: function (res) {
-    //             console.log('response detail spm', res);
-    //             var spm_detail = {
-    //                 action: "singkron_spm_detail",
-    //                 tahun_anggaran: _token.tahun,
-    //                 api_key: config.api_key,
-    //                 idSkpd: current_data.id_skpd,
-    //                 id_spm: current_data.id_spm,
-    //                 tipe: tipe,
-    //                 sumber: 'ri',
-    //                 data: res[res.jenis.toLowerCase()]
-    //             };
-    //             var data_back = {
-    //                 message: {
-    //                     type: "get-url",
-    //                     content: {
-    //                         url: config.url_server_lokal+'/spm_cetak',
-    //                         type: "post",
-    //                         data: spm_detail,
-    //                         return: true
-    //                     },
-    //                 }
-    //             };
-    //             chrome.runtime.sendMessage(data_back, (resp) => {
-    //                 window.singkron_spm_detail = {
-    //                     resolve: resolve
-    //                 };
-    //                 pesan_loading("Kirim data SPM detail ID="+current_data.id_spm+" tipe="+tipe);
-    //             });
-    //         },
-    //         error: function(err){
-    //             console.log('Error get detail SPM! id='+current_data.id_spm, err);
-    //             resolve();
-    //         }
-    //     });
-    // })
-    // .then(function () {
-    //     callback();
-    // });
 }
 
 
@@ -234,7 +201,7 @@ function singkron_spm_cetak_ke_lokal_skpd(current_data, tipe, status, callback) 
 							xhr.setRequestHeader("Authorization", 'Bearer '+getCookie('X-SIPD-PU-TK'));
 					},
 					success: function (res) {
-							console.log('response detail spm', res);
+							console.log('response cetak spm', res);
 							var spm_detail = {
 									action: "singkron_spm_detail",
 									tahun_anggaran: _token.tahun,

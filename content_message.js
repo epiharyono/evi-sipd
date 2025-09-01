@@ -15,7 +15,7 @@ window.addEventListener('message', function(event) {
     		if(!opsi){
 	    		window.options_datatable = {
 					"aoColumnDefs": [
-				        { "bSortable": false, "aTargets": [ 0 ] }, 
+				        { "bSortable": false, "aTargets": [ 0 ] },
 				        { "bSearchable": false, "aTargets": [ 0 ] }
 				    ],
 				    "order": [[2, 'asc'], [3, 'asc']],
@@ -25,7 +25,7 @@ window.addEventListener('message', function(event) {
 			}else{
 	    		window.options_datatable = {
 					"aoColumnDefs": [
-				        { "bSortable": false, "aTargets": [ 0 ] }, 
+				        { "bSortable": false, "aTargets": [ 0 ] },
 				        { "bSearchable": false, "aTargets": [ 0 ] }
 				    ],
 					lengthMenu: [[5, 20, 100, -1], [5, 20, 100, "All"]]
@@ -51,7 +51,7 @@ window.addEventListener('message', function(event) {
     	case 'show_modal_sm':
     		window.options_datatable = {
 				"aoColumnDefs": [
-			        { "bSortable": false, "aTargets": [ 0 ] }, 
+			        { "bSortable": false, "aTargets": [ 0 ] },
 			        { "bSearchable": false, "aTargets": [ 0 ] }
 			    ],
 				lengthMenu: [[5, 20, 100, -1], [5, 20, 100, "All"]]
@@ -66,9 +66,9 @@ window.addEventListener('message', function(event) {
     	case 'show_modal_usulan_ssh':
     		window.options_datatable = {
     			'columnDefs': [
-    				{ 'width': '300px', 'targets': 6 }, 
-    				{ orderable: false, targets: 1 }], 
-    				lengthMenu: [ [10, 250, 500, -1], [10, 250, 500, 'All'] 
+    				{ 'width': '300px', 'targets': 6 },
+    				{ orderable: false, targets: 1 }],
+    				lengthMenu: [ [10, 250, 500, -1], [10, 250, 500, 'All']
     			]
     		};
     		jQuery("#usulan-ssh").modal("show");

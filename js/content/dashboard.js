@@ -15,8 +15,8 @@ function singkron_dashboard_ke_lokal(val) {
 }
 
 function cek_jadwal(){
-		jQuery('#wrap-loading').show();
-		pesan_loading('Cek Jadwal');
+		//jQuery('#wrap-loading').show();
+		// pesan_loading('Cek Jadwal');
 		jQuery.ajax({
 				url: config.service_url + "referensi/strict/setting",
 				type: 'get',
@@ -40,7 +40,7 @@ function cek_jadwal(){
 
 
 function singkron_belanja_dashboard_ke_lokal() {
-    jQuery('#wrap-loading').show();
+    //jQuery('#wrap-loading').show();
 	arrbulan = ["01","02","03","04","05","06","07","08","09","10","11","12"];
 	date = new Date();
     millisecond = date.getMilliseconds();
@@ -91,7 +91,7 @@ function singkron_belanja_dashboard_ke_lokal() {
 }
 
 function singkron_pendapatan_dashboard_ke_lokal() {
-    jQuery('#wrap-loading').show();
+    //jQuery('#wrap-loading').show();
     var url = config.service_url+'penerimaan/strict/dashboard/statistik-pendapatan';
     return new Promise(function(resolve, reduce){
 	    relayAjaxApiKey({
@@ -131,7 +131,7 @@ function singkron_pendapatan_dashboard_ke_lokal() {
 }
 
 function singkron_pembiayaan_dashboard_ke_lokal() {
-    jQuery('#wrap-loading').show();
+    //jQuery('#wrap-loading').show();
     var url = config.service_url+'pembiayaan/strict/dashboard/statistik-pembiayaan';
     return new Promise(function(resolve, reduce){
 	    relayAjaxApiKey({

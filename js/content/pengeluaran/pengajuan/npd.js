@@ -8,7 +8,7 @@ function singkron_npd_lokal(){
 }
 
 
-function get_npd(opsi, page=1, limit=50){
+function get_npd(opsi, page=1, limit=5000){
 
   console.log('ini halaman page ya ',page);
 
@@ -191,7 +191,7 @@ function get_npd(opsi, page=1, limit=50){
 }
 
 
-function get_backup_npd(opsi, page=1, limit=50){
+function get_backup_npd(opsi, page=1, limit=5000){
 	return new Promise(function(resolve, reject){
 		var status = 'validasi';
 		pesan_loading('Get data NPD, status='+status+', page='+page);

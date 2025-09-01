@@ -1,4 +1,4 @@
-function singkron_spp_lokal(val, type_data, page=1, response_all=[]) {
+function singkron_spp_lokal(val, type_data, page=1,response_all=[]) {
 	jQuery('#wrap-loading').show();
 	// status = draft , diterima , dihapus , ditolak
 	var status = val;
@@ -6,6 +6,7 @@ function singkron_spp_lokal(val, type_data, page=1, response_all=[]) {
 	return new Promise(function(resolve, reduce){
 		relayAjaxApiKey({
 				// url: config.service_url+'pengeluaran/strict/spp/pembuatan/index?jenis='+type_data+'&status='+status+'&page='+page,
+
 	  		url: config.service_url+'pengeluaran/strict/spp/pembuatan/index?status='+status+'&page='+page,
 		  	type: 'get',
 		  	success: function (response) {
@@ -15,7 +16,7 @@ function singkron_spp_lokal(val, type_data, page=1, response_all=[]) {
 						response_all.push(b);
 					})
 
-					if(page <= 20){
+					if(page <= 1000){
 							setTimeout(() => {
 									console.log('ini post_spp_localdb : '+page);
 									singkron_spp_lokal(val, type_data, page+1, response_all);
@@ -59,10 +60,39 @@ function singkron_spp_lokal(val, type_data, page=1, response_all=[]) {
 					}, Promise.resolve(response_all[last]))
 					.then(function (data_last) {
 					  	jQuery("#wrap-loading").hide();
-					  	alert("Berhasil singkron SPP");
 					  	return resolve();
 					});
 				}
+		  	},
+		});
+	});
+}
+
+function singkron_spp_search_lokal(val, type_data, page=1, search, response_all=[]) {
+	jQuery('#wrap-loading').show();
+	// status = draft , diterima , dihapus , ditolak
+	var status = val;
+	pesan_loading('Get data SPP jenis='+type_data+' , status='+status+', halaman='+page);
+	return new Promise(function(resolve, reduce){
+		relayAjaxApiKey({
+				// url: config.service_url+'pengeluaran/strict/spp/pembuatan/index?jenis='+type_data+'&status='+status+'&page='+page,
+
+	  		url: config.service_url+'pengeluaran/strict/spp/pembuatan/index?status='+status+'&page='+page+'&nomor_spp='+search,
+		  	type: 'get',
+		  	success: function (response) {
+				console.log('SPP', response);
+				if(response!=null && response.length >= 1){
+						response.map(function(b, i){
+							response_all.push(b);
+						})
+
+
+						singkron_spp_search_lokal(val, type_data, page+1, search, response_all);
+						return resolve();
+
+					}else{
+							post_spp_localdb(response_all);
+					}
 		  	},
 		});
 	});
@@ -99,60 +129,66 @@ function singkron_spp_ke_lokal_skpd(current_data, tipe, status, callback) {
 	 	data: {}
 	};
 	spp.data[0] = {}
-	spp.data[0].nomorSpp = current_data.nomor_spp;
-	spp.data[0].nilaiSpp = current_data.nilai_spp;
-	spp.data[0].tanggalSpp = current_data.tanggal_spp;
-	spp.data[0].keteranganSpp = current_data.keterangan_spp;
-	spp.data[0].idSkpd = current_data.id_skpd;
-	spp.data[0].idSubUnit = current_data.id_sub_skpd;
-	spp.data[0].nilaiDisetujuiSpp = current_data.nilai_spp;
-	spp.data[0].tanggalDisetujuiSpp = current_data.id_sub_giat;
-	spp.data[0].jenisSpp = current_data.jenis_spp;
-	spp.data[0].verifikasiSpp = current_data.is_verifikasi_spp;
-	spp.data[0].keteranganVerifikasi = current_data.keterangan_verifikasi_spp;
-	// spp.data[0].idSpd = current_data.id_spd;
-	// spp.data[0].idPengesahanSpj = id_sub_giat;
-	spp.data[0].kunciRekening = current_data.is_kunci_rekening_spp;
-	// spp.data[0].alamatPenerimaSpp = id_sub_giat;
-	// spp.data[0].bankPenerimaSpp = id_sub_giat;
-	// spp.data[0].nomorRekeningPenerimaSpp = id_sub_giat;
-	// spp.data[0].npwpPenerimaSpp = id_sub_giat;
-	spp.data[0].idUser = current_data.created_by;
-	spp.data[0].jenisLs = current_data.jenis_ls_spp;
-	spp.data[0].isUploaded = current_data.is_rekanan_upload;
-	spp.data[0].tahunSpp = current_data.tahun;
-	spp.data[0].idKontrak = current_data.id_kontrak;
-	spp.data[0].idBA = current_data.id_ba;
-	spp.data[0].created_at = current_data.created_at;
-	spp.data[0].updated_at = current_data.updated_at;
-	spp.data[0].isSpm = current_data.is_spm;
-	spp.data[0].statusPerubahan = current_data.status_perubahan_by;
-	// spp.data[0].isDraft = id_sub_giat;
-	spp.data[0].idSpp = current_data.id_spp;
-	// spp.data[0].kodeDaerah = id_sub_giat;
-	spp.data[0].idDaerah = current_data.id_daerah;
-	spp.data[0].isGaji = current_data.is_gaji;
-	spp.data[0].is_sptjm = current_data.is_sptjm;
-	spp.data[0].tanggal_otorisasi = current_data.verifikasi_spp_at;
-	spp.data[0].is_otorisasi = current_data.is_verifikasi_spp;
+	spp.data[0].id_spp = current_data.id_spp;
 	spp.data[0].bulan_gaji = current_data.bulan_gaji;
-	spp.data[0].id_pegawai_pptk = current_data.id_pegawai_pptk;
-	// spp.data[0].nama_pegawai_pptk = id_sub_giat;
-	// spp.data[0].nip_pegawai_pptk = id_sub_giat;
-	spp.data[0].id_jadwal = current_data.id_jadwal;
-	spp.data[0].id_tahap = current_data.id_tahap;
-	spp.data[0].status_tahap = current_data.status_tahap;
-	spp.data[0].kode_tahap = current_data.kode_tahap;
-	spp.data[0].is_tpp = current_data.is_tpp;
 	spp.data[0].bulan_tpp = current_data.bulan_tpp;
+	spp.data[0].created_at = current_data.created_at;
+	spp.data[0].created_by = current_data.created_by;
+	spp.data[0].deleted_at = current_data.deleted_at;
+	spp.data[0].deleted_by = current_data.deleted_by;
+	spp.data[0].details = current_data.details;
+	spp.data[0].id_ba = current_data.id_ba;
+	spp.data[0].id_daerah = current_data.id_daerah;
+	spp.data[0].id_jadwal = current_data.id_jadwal;
+	spp.data[0].id_kontrak = current_data.id_kontrak;
+	spp.data[0].id_lpj_gu = current_data.id_lpj_gu;
+	spp.data[0].id_pegawai_pa_kpa = current_data.id_pegawai_pa_kpa;
+	spp.data[0].id_pegawai_pptk = current_data.id_pegawai_pptk;
 	spp.data[0].id_pengajuan_tu = current_data.id_pengajuan_tu;
-	// spp.data[0].nomor_pengajuan_tu = id_sub_giat;
-	// spp.data[0].id_npd = id_sub_giat;
+	spp.data[0].id_skpd = current_data.id_skpd;
+	spp.data[0].id_sub_skpd = current_data.id_sub_skpd;
+	spp.data[0].id_sumber_dana = current_data.id_sumber_dana;
+	spp.data[0].id_tahap = current_data.id_tahap;
+	spp.data[0].id_unit = current_data.id_unit;
+	spp.data[0].is_gaji = current_data.is_gaji;
+	spp.data[0].is_kunci_rekening_spp = current_data.is_kunci_rekening_spp;
+	spp.data[0].is_rekanan_upload = current_data.is_rekanan_upload;
+	spp.data[0].is_spm = current_data.is_spm;
+	spp.data[0].is_status_perubahan = current_data.is_status_perubahan;
+	spp.data[0].is_tpp = current_data.is_tpp;
+	spp.data[0].is_verifikasi_spp = current_data.is_verifikasi_spp;
+	spp.data[0].jenis_gaji = current_data.jenis_gaji;
+	spp.data[0].jenis_ls_spp = current_data.jenis_ls_spp;
+	spp.data[0].jenis_spp = current_data.jenis_spp;
+	spp.data[0].keterangan_spp = current_data.keterangan_spp;
+	spp.data[0].keterangan_verifikasi_spp = current_data.keterangan_verifikasi_spp;
+	spp.data[0].kode_tahap = current_data.kode_tahap;
+	spp.data[0].nilai_materai_spp = current_data.nilai_materai_spp;
+	spp.data[0].nilai_spp = current_data.nilai_spp;
+	spp.data[0].nilai_verifikasi_spp = current_data.nilai_verifikasi_spp;
+	spp.data[0].nomor_spp = current_data.nomor_spp;
+	spp.data[0].rekanan_nama_perusahaan = current_data.rekanan_nama_perusahaan;
+	spp.data[0].rekanan_nama_rekening = current_data.rekanan_nama_rekening;
+	spp.data[0].rekanan_nama_tujuan = current_data.rekanan_nama_tujuan;
+	spp.data[0].rekanan_nik = current_data.rekanan_nik;
+	spp.data[0].rekanan_nomor_rekening = current_data.rekanan_nomor_rekening;
+	spp.data[0].status_perubahan_at = current_data.status_perubahan_at;
+	spp.data[0].status_perubahan_by = current_data.status_perubahan_by;
+	spp.data[0].status_tahap = current_data.status_tahap;
+	spp.data[0].tahun = current_data.tahun;
+	spp.data[0].tahun_gaji = current_data.tahun_gaji;
+	spp.data[0].tahun_tpp = current_data.tahun_tpp;
+	spp.data[0].tanggal_spp = current_data.tanggal_spp;
+	spp.data[0].updated_at = current_data.updated_at;
+	spp.data[0].updated_by = current_data.updated_by;
+	spp.data[0].verifikasi_spp_at = current_data.verifikasi_spp_at;
+	spp.data[0].verifikasi_spp_by = current_data.verifikasi_spp_by;
+
 	var data_back = {
 	 	 message: {
 			type: "get-url",
 			content: {
-			  	url: config.url_server_lokal,
+			  	url: config.url_server_lokal+'/spp',
 			  	type: "post",
 			  	data: spp,
 			  	return: false

@@ -41,13 +41,18 @@ function cekLisensi() {
 		var url = config.url_server_lokal;
     $.post(url+'/realtime', function(data){
         let spp  = data.spp;
-        let spp_cetak   = data.spp_cetak;
+				let spp_cetak   = data.spp_cetak;
+        let spp_search   = data.spp_search;
 				let sppd  = data.sppd;
 				let sppd_cetak  = data.sppd_cetak;
+				let sppd_search  = data.sppd_search;
 				let spm  = data.spm;
         let spm_cetak  = data.spm_cetak;
+				let spm_search  = data.spm_search;
 				let realtime = data.realtime
 				let npd = data.npd
+				let gaji = data.gaji
+				let rekanan = data.rekanan
 
 				let time  = 1;
 
@@ -61,15 +66,15 @@ function cekLisensi() {
 						singkron_sp2d_cetak_ke_lokal_skpd(sppd_cetak_act)
 						time = 3
 				}
+				if(sppd_search){
+						// let sppd_search_act = { id_skpd: sppd_search.id_skpd, id_sp_2_d: sppd_search.act_id}
+						singkron_sp2d_by_nomor(sppd_search.search)
+						time = 3
+				}
 
 				if(spm){
 						let type_data_global = ['LS'];
 						singkron_spm_lokal('diterima', cp_obj(type_data_global));
-						time = 3
-				}
-
-				if(spp){
-						singkron_spp_lokal('diterima','LS',1)
 						time = 3
 				}
 
@@ -78,11 +83,32 @@ function cekLisensi() {
 						singkron_spm_cetak_ke_lokal_skpd(spm_cetakx, spm_cetak.jenis, 'status')
 						time = 3
 				}
+				if(spm_search){
+						singkron_spm_lokal_bynomor(spm_search.search)
+						time = 3
+				}
+
+				if(spp){
+						singkron_spp_lokal('diterima','LS',1)
+						time = 3
+						console.log('singkron SPP ');
+				}
+
+				if(spp_search){
+						singkron_spp_search_lokal('diterima','LS',1, spp_search.search)
+						time = 3
+						console.log('singkron SPP ');
+				}
 
 				if(spp_cetak){
 						let spp_cetak_act = { id_skpd: spp_cetak.id_skpd, id_spp: spp_cetak.act_id}
 						let jenis = spp_cetak.jenis
 						singkron_spp_cetak_ke_lokal_skpd(spp_cetak_act,jenis,'status')
+						time = 3
+				}
+
+				if(gaji){
+						get_gaji(gaji.id_skpd,gaji.act_id)
 						time = 3
 				}
 
@@ -95,8 +121,15 @@ function cekLisensi() {
 						singkron_npd_lokal()
 				}
 
+				if(rekanan){
+					console.log('rekanan');
+					console.log(rekanan);
+						get_rekanan_bynorek(rekanan.jenis,rekanan.id_skpd)
+				}
+
         setTimeout(function(){
           	cekLisensi();
+						console.log('ulangi ...');
         }, 2000 * time);
 
     }).fail(function() {

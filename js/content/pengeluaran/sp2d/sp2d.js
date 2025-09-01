@@ -68,7 +68,7 @@ function singkron_sp2d_lokal_per_jenis(type_data, status, page=1, response_all=[
 	                response.map(function(b, i){
 	                    response_all.push(b);
 	                })
-									if(page <= 20){
+									if(page <= 1000){
 											singkron_sp2d_lokal_per_jenis(type_data, status, page+1, response_all, cb);
 									}else{
 											post_sp2d_localdb(response_all);
@@ -102,7 +102,8 @@ async function post_sp2d_localdb(response){
 }
 
 function singkron_sp2d_cetak_ke_lokal_skpd(current_data){
-
+				console.log('disini current data');
+				console.log(current_data);
 				var url = config.service_url + "pengeluaran/strict/sp2d/pembuatan/cetak/" + current_data.id_sp_2_d;
 			    new Promise(function (resolve, reject) {
 			        jQuery.ajax({
@@ -129,7 +130,7 @@ function singkron_sp2d_cetak_ke_lokal_skpd(current_data){
 			                    message: {
 			                        type: "get-url",
 			                        content: {
-			                            url: config.url_server_lokal,
+			                            url: config.url_server_lokal+'/sp2d_cetak',
 			                            type: "post",
 			                            data: sp2d_detail,
 			                            return: true
@@ -140,9 +141,6 @@ function singkron_sp2d_cetak_ke_lokal_skpd(current_data){
 
 											// baru yasmin caca
 			                chrome.runtime.sendMessage(data_back, (resp) => {
-			                    window.singkron_sp2d_detail = {
-			                        resolve: resolve
-			                    };
 			                    pesan_loading("Kirim data SP2D detail ID="+current_data.id_sp_2_d+" tipe=");
 			                });
 
@@ -155,9 +153,43 @@ function singkron_sp2d_cetak_ke_lokal_skpd(current_data){
 			    })
 			    .then(function () {
 							setTimeout(() => {
-			        		callback();
+			        		// callback();
 							}, 2000)
 			    });
+
+}
+
+function singkron_sp2d_by_nomor(nomor_sp_2_d,response_all=[]){
+    pesan_loading('Get data SP2D nomor ='+nomor_sp_2_d);
+
+    setTimeout(() => {
+	    relayAjaxApiKey({
+					// url: config.service_url+'pengeluaran/strict/sp2d/pembuatan/index?jenis='+type_data+'&status='+status+'&page='+page,
+	        url: config.service_url+'pengeluaran/strict/sp2d/pembuatan/index?nomor_sp2d='+nomor_sp_2_d,
+	        type: 'get',
+	        success: function (response) {
+	            console.log('SP2D', response);
+
+	            if(response!=null && response.length >= 1){
+	                response.map(function(b, i){
+	                    response_all.push(b);
+	                })
+									// disini pertama
+									// singkron_sp2d_by_nomor(nomor_sp_2_d);
+									let sp2d = {};
+									sp2d.id_sp_2_d = response_all[0].id_sp_2_d
+									sp2d.id_skpd = response_all[0].id_skpd
+									sp2d.id_spm = response_all[0].id_spm
+									sp2d.id_skpd = response_all[0].id_skpd
+
+									singkron_sp2d_cetak_ke_lokal_skpd(sp2d);
+	                post_sp2d_localdb(response_all);
+									singkron_spm_lokal_bynomor(response_all[0].nomor_spm);
+									singkron_spm_cetak_ke_lokal_skpd(sp2d,response_all[0].jenis_sp_2_d,'status');
+	            }
+	        },
+	    });
+    }, 2000)
 
 }
 
@@ -173,6 +205,13 @@ function singkron_sp2d_ke_lokal_skpd(current_data, tipe, status, callback) {
 	 	data: {}
 	};
 	sp2d.data[0] = {};
+	sp2d.data[0].id_sp_2_d = current_data.id_sp_2_d;
+	sp2d.data[0].nomor_sp_2_d = current_data.nomor_sp_2_d;
+	sp2d.data[0].id_spm = current_data.id_spm;
+	sp2d.data[0].nomor_spm = current_data.nomor_spm;
+
+
+
 	sp2d.data[0].bulan_gaji = current_data.bulan_gaji;
 	sp2d.data[0].bulan_tpp = current_data.bulan_tpp;
 	sp2d.data[0].created_at = current_data.created_at;
@@ -185,8 +224,6 @@ function singkron_sp2d_ke_lokal_skpd(current_data, tipe, status, callback) {
 	sp2d.data[0].id_pegawai_bud_kbud = current_data.id_pegawai_bud_kbud;
 	sp2d.data[0].id_rkud = current_data.id_rkud;
 	sp2d.data[0].id_skpd = current_data.id_skpd;
-	sp2d.data[0].id_sp_2_d = current_data.id_sp_2_d;
-	sp2d.data[0].id_spm = current_data.id_spm;
 	sp2d.data[0].id_sub_skpd = current_data.id_sub_skpd;
 	sp2d.data[0].id_sumber_dana = current_data.id_sumber_dana;
 	sp2d.data[0].id_tahap = current_data.id_tahap;
@@ -220,8 +257,6 @@ function singkron_sp2d_ke_lokal_skpd(current_data, tipe, status, callback) {
 	sp2d.data[0].nip_bud_kbud = current_data.nip_bud_kbud;
 	sp2d.data[0].no_rek_bp_bpp = current_data.no_rek_bp_bpp;
 	sp2d.data[0].nomor_jurnal = current_data.nomor_jurnal;
-	sp2d.data[0].nomor_sp_2_d = current_data.nomor_sp_2_d;
-	sp2d.data[0].nomor_spm = current_data.nomor_spm;
 	sp2d.data[0].status_aklap = current_data.status_aklap;
 	sp2d.data[0].status_perubahan_at = current_data.status_perubahan_at;
 	sp2d.data[0].status_perubahan_by = current_data.status_perubahan_by;
@@ -237,11 +272,17 @@ function singkron_sp2d_ke_lokal_skpd(current_data, tipe, status, callback) {
 	sp2d.data[0].updated_by = current_data.updated_by;
 	sp2d.data[0].verifikasi_sp_2_d_at = current_data.verifikasi_sp_2_d_at;
 	sp2d.data[0].verifikasi_sp_2_d_by = current_data.verifikasi_sp_2_d_by;
+
+	sp2d.data[0].overbook_gagal = current_data.overbook_gagal;
+	sp2d.data[0].overbook_expired = current_data.overbook_expired;
+	sp2d.data[0].execution_time = current_data.execution_time;
+	// sp2d.data[0].verifikasi_sp_2_d_by = current_data.verifikasi_sp_2_d_by;
+	// sp2d.data[0].verifikasi_sp_2_d_by = current_data.verifikasi_sp_2_d_by;
 	var data_back = {
 	 	 message: {
 			type: "get-url",
 			content: {
-			  	url: config.url_server_lokal,
+			  	url: config.url_server_lokal+'/sp2d',
 			  	type: "post",
 			  	data: sp2d,
 			  	return: false
@@ -255,62 +296,5 @@ function singkron_sp2d_ke_lokal_skpd(current_data, tipe, status, callback) {
 
 
 
-
-
-			// var url = config.service_url + "pengeluaran/strict/sp2d/pembuatan/cetak/" + current_data.id_sp_2_d;
-		  //   new Promise(function (resolve, reject) {
-		  //       jQuery.ajax({
-		  //           url: url,
-		  //           type: 'get',
-		  //           dataType: "JSON",
-		  //           beforeSend: function (xhr) {
-		  //               xhr.setRequestHeader("Authorization", 'Bearer '+getCookie('X-SIPD-PU-TK'));
-		  //           },
-		  //           success: function (res) {
-		  //               console.log('response detail sp2d', res);
-		  //               var sp2d_detail = {
-		  //                   action: "singkron_sp2d_detail",
-		  //                   tahun_anggaran: _token.tahun,
-		  //                   api_key: config.api_key,
-		  //                   idSkpd: current_data.id_skpd,
-		  //                   id_sp_2_d: current_data.id_sp_2_d,
-			// 									tipe: tipe,
-		  //                   jenis: current_data,
-		  //                   sumber: 'ri',
-		  //                   data: res[res.jenis.toLowerCase()]
-		  //               };
-		  //               var data_back = {
-		  //                   message: {
-		  //                       type: "get-url",
-		  //                       content: {
-		  //                           url: config.url_server_lokal,
-		  //                           type: "post",
-		  //                           data: sp2d_detail,
-		  //                           return: true
-		  //                       },
-		  //                   }
-		  //               };
-			//
-			//
-			// 							// baru yasmin caca
-		  //               chrome.runtime.sendMessage(data_back, (resp) => {
-		  //                   window.singkron_sp2d_detail = {
-		  //                       resolve: resolve
-		  //                   };
-		  //                   pesan_loading("Kirim data SP2D detail ID="+current_data.id_sp_2_d+" tipe="+tipe);
-		  //               });
-			//
-		  //           },
-		  //           error: function(err){
-		  //               console.log('Error get detail SP2D! id='+current_data.id_sp_2_d, err);
-		  //               resolve();
-		  //           }
-		  //       });
-		  //   })
-		  //   .then(function () {
-			// 			setTimeout(() => {
-		  //       		callback();
-			// 			}, 2000)
-		  //   });
 
 }
